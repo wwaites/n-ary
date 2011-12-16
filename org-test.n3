@@ -8,7 +8,7 @@ ex:president a nary:BinaryRelation ;
     nary:objectPredicate org:member ;
     nary:arg [
         nary:predicate org:role ;
-        nary:object ex:president
+        nary:object ex:presidentRole
     ] .
 
 ex:org ex:president ex:alice .

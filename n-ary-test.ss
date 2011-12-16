@@ -96,7 +96,7 @@
 ###
 ###     [ a org:Membership ;
 ###       org:organisation ex:org ;
-###       org:role ex:president ;
+###       org:role ex:presidentRole ;
 ###       org:member ex:alice ]
 ###
 ################################################################
@@ -110,7 +110,7 @@
         nary:objectPredicate org:member ;
         nary:arg [
             nary:predicate org:role ;
-            nary:object ex:president
+            nary:object ex:presidentRole
         ] .
 }
 
@@ -126,7 +126,7 @@
     [
         a org:Membership ;
         org:organisation ex:org ;
-        org:role ex:president ;
+        org:role ex:presidentRole ;
         org:member ex:alice
     ] .
 }

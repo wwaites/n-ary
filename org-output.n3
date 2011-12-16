@@ -4,6 +4,6 @@
 [
     a org:Membership ;
     org:organisation ex:org ;
-    org:role ex:president ;
+    org:role ex:presidentRole ;
     org:member ex:alice
 ] .
