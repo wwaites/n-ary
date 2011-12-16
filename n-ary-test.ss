@@ -223,7 +223,7 @@
         ex:unit ex:kg
     ] .
 }
-@asserteq :reifiedKg :reifiedKgExp ; Check for correct mass in kg
+@asserteq :reifiedKg :reifiedKgExp ; Check for correct reified mass in kg
 
 ### Then we do a unit conversion
 @fwdchain :conversionRules :convert (:mass :conversion :reifiedKg) => :reifiedLbs
@@ -235,7 +235,7 @@
         ex:unit ex:lb
     ] .
 }
-@asserteq :reifiedLbs :reifiedLbsExp ; Check the correct mass in lbs
+@asserteq :reifiedLbs :reifiedLbsExp ; Check the correct reified mass in lbs
 
 ### Finally we generate the result in terms of the curried predicate for pounds
 @fwdchain :rules :revBinary (:mass :conversion :reifiedLbs) => :lbs
