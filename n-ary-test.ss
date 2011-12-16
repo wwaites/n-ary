@@ -13,9 +13,11 @@
 ###
 ################################################################
 
+################################################################
 ###
 ### Rule #1 - Convert from a binary relation to reified form.
 ###
+################################################################
 @rule :binary :- {
     ?x ?rel ?y .
     ?rel a nary:BinaryRelation ;
@@ -34,9 +36,11 @@
     ] .
 }
 
+################################################################
 ###
 ### Rule #2 - Convert from a reified form to a binary relation.
 ###
+################################################################
 @rule :revBinary :- {
     ?rel a nary:BinaryRelation ;
         nary:reifiedType ?reified ;
@@ -53,10 +57,12 @@
     ?subj ?rel ?obj .
 }
 
+################################################################
 ###
 ### Rule #3 - When nary:CurriedPredicates inherit, they carry
 ###           along the nary:reifiedType.
 ###
+################################################################
 @rule :inheritType :- {
     ?super a nary:CurriedPredicate ;
         nary:reifiedType ?type .
@@ -65,10 +71,12 @@
     ?sub nary:reifiedType ?type .
 }
 
+################################################################
 ###
 ### Rule #4 - When nary:CurriedPredicates inherit, they carry
 ###           along the arguments. This is what gives us N>3.
 ###
+################################################################
 @rule :inheritArgs :- {
     ?super a nary:CurriedPredicate ;
         nary:arg ?arg .
