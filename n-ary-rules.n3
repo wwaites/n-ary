@@ -49,3 +49,31 @@
 } => {
     ?subj ?rel ?obj .
 } .
+
+#################################################################
+###
+### Rule #3 - When nary:CurriedPredicates inherit, they carry
+###           along the nary:reifiedType.
+###
+#################################################################
+{
+    ?super a nary:CurriedPredicate ;
+        nary:reifiedType ?type .
+    ?sub rdfs:subPropertyOf ?super .
+} => {
+    ?sub nary:reifiedType ?type .
+} .
+
+#################################################################
+###
+### Rule #4 - When nary:CurriedPredicates inherit, they carry
+###           along the arguments. This is what gives us N>3.
+###
+#################################################################
+{
+    ?super a nary:CurriedPredicate ;
+        nary:arg ?arg .
+    ?sub rdfs:subPropertyOf ?super .
+} => {
+    ?sub nary:arg ?arg .
+} .

@@ -1,3 +1,4 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix nary: <http://gallows.inf.ed.ac.uk/schema/n-ary#> .
 @prefix xsddec: <http://id.ninebynine.org/2003/XMLSchema/decimal#> .
@@ -13,7 +14,7 @@
 ################################################################
 
 ###
-### Rule #1 - convert from a binary relation to the reified form
+### Rule #1 - Convert from a binary relation to reified form.
 ###
 @rule :binary :- {
     ?x ?rel ?y .
@@ -34,7 +35,7 @@
 }
 
 ###
-### Rule #2 - convert from a reified form to a binary relation
+### Rule #2 - Convert from a reified form to a binary relation.
 ###
 @rule :revBinary :- {
     ?rel a nary:BinaryRelation ;
@@ -50,6 +51,30 @@
         ?argP ?argO .
 } => {
     ?subj ?rel ?obj .
+}
+
+###
+### Rule #3 - When nary:CurriedPredicates inherit, they carry
+###           along the nary:reifiedType.
+###
+@rule :inheritType :- {
+    ?super a nary:CurriedPredicate ;
+        nary:reifiedType ?type .
+    ?sub rdfs:subPropertyOf ?super .
+} => {
+    ?sub nary:reifiedType ?type .
+}
+
+###
+### Rule #4 - When nary:CurriedPredicates inherit, they carry
+###           along the arguments. This is what gives us N>3.
+###
+@rule :inheritArgs :- {
+    ?super a nary:CurriedPredicate ;
+        nary:arg ?arg .
+    ?sub rdfs:subPropertyOf ?super .
+} => {
+    ?sub nary:arg ?arg .
 }
 
 ################################################################
@@ -210,3 +235,72 @@
     ex:spaceship ex:massInPounds 2200.0 .
 }
 @asserteq :lbs :lbsExp ; Check the correct curried mass in lbs 
+
+
+###########################################################################
+###
+### Test Case III - N-ary curried predicate where N > 3
+###
+### In this case we add an extra parameter to the mass observation,
+### the reference frame. And so we convert back and forth between,
+###
+###     [ a :MassObservation ;
+###       :system :spaceship ;
+###       :refFrame :rest ;
+###       :value 1000.0 ;
+###       :units :kg ].
+###
+### and
+###
+###     :spaceship :restMassInKilograms 1000.0 .
+###
+###########################################################################
+:relMass :- {
+    ### a curried partial predicate embedding the reference frame
+    ex:restMass a nary:CurriedPredicate ;
+        nary:reifiedType ex:MassObservation ;
+        nary:arg [
+            nary:predicate ex:refFrame ;
+            nary:object ex:rest
+        ] .
+
+    ### a curried binary predicate embedding the kilogram unit
+    ex:restMassInKilograms a nary:BinaryRelation ;
+        rdfs:subPropertyOf ex:restMass ;
+        nary:subjectPredicate ex:system ;
+        nary:objectPredicate ex:value ;
+        nary:arg [
+            nary:predicate ex:unit ;
+            nary:object ex:kg
+        ] .
+}
+
+### test input
+:spaceship :- {
+    ex:spaceship ex:restMassInKilograms 1000.0 .
+}
+
+@ruleset :rules :- (:relMass) ; (:binary :revBinary :inheritType :inheritArgs)
+### fill out the implied bits of schema that come when predicates inherit
+@fwdchain :rules :inheritType (:relMass) => :relMassType
+@fwdchain :rules :inheritArgs (:relMass) => :relMassArgs
+
+### run the rules to reify the observation
+@fwdchain :rules :binary (:relMass :relMassType :relMassArgs :spaceship) => :spaceshipReified
+:spaceshipReifiedExp :- {
+    [
+        a ex:MassObservation ;
+        ex:system ex:spaceship ;
+        ex:refFrame ex:rest ;
+        ex:value 1000.0 ;
+        ex:unit ex:kg
+    ] .
+}
+@asserteq :spaceshipReified :spaceshipReifiedExp ; Check correct reified relativistic mass
+
+### run the rules in reverse to curry the observation
+@fwdchain :rules :revBinary (:relMass :relMassType :relMassArgs :spaceshipReified) => :spaceshipCurried
+:spaceshipCurriedExp :- {
+    ex:spaceship ex:restMassInKilograms 1000.0 .
+}
+@asserteq :spaceshipCurried :spaceshipCurriedExp ; Check correct curried relativistic mass
