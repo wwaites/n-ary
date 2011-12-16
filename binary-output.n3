@@ -1,0 +1,9 @@
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix ex: <http://example.org/> .
+
+[
+    a org:Membership ;
+    org:organisation ex:org ;
+    org:role ex:president ;
+    org:member ex:alice
+] .

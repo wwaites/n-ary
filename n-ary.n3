@@ -1,0 +1,123 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix nary: <http://gallows.inf.ed.ac.uk/schema/n-ary#> .
+
+nary:Relation a owl:Class ;
+    rdfs:label "(reified) n-ary relation" ;
+    rdfs:comment """
+The class of resources such as are often used in RDF
+to represent non-binary relations. An example is the
+org:Membership class, which is used to relate an agent,
+an organisation and a role as in,
+
+    nary:m a org:Membership ;
+        org:member <http://example.org/people/alice> ;
+        org:organisation <http://example.org/org> ;
+        org:role <http://example.org/roles/president> .
+
+then we can also say,
+
+    org:Membership a nary:Relation .
+""" .
+
+nary:reifiedType a owl:ObjectProperty ;
+    rdfs:label "reified type" ;
+    rdfs:domain nary:CurriedRelation ;
+    rdfs:range nary:Relation ;
+    rdfs:comment """
+The nary:reifiedType property connects a nary:CurriedRelation to
+the reified complete nary:Relation that it expands to when
+all arguments are uncurried.
+""" .
+
+nary:CurriedRelation a owl:Class ;
+    rdfs:label "curried relation" ;
+    rdfs:subClassOf
+        rdf:Property, [
+            a owl:Restriction ; 
+            owl:onProperty nary:reifiedType ;
+            owl:minCardinality 1
+        ], [
+            a owl:Restriction ;
+            owl:onProperty nary:arg ;
+            owl:minCardinality 1
+        ] ;
+    rdfs:comment """
+A nary:CurriedRelation is a type of predicate that contains
+extra information to support the creation of an instance of
+an nary:Relation. In particular it must have at least one
+one statement with nary:reifiedType, and at least one statement
+with nary:arg indicating the information that is implicitly
+carried along.
+""" .
+
+nary:arg a rdf:Property ;
+    rdfs:label "argument" ;
+    rdfs:domain nary:CurriedRelation ;
+    rdfs:range rdf:Resource ;
+    rdfs:comment """
+nary:arg connects a nary:CurriedRelation to a curried
+nary:Argument.
+""" .
+
+nary:predicate a owl:ObjectProperty ;
+    rdfs:label "predicate" ;
+    rdfs:domain nary:Argument ;
+    rdfs:range rdf:Property ;
+    rdfs:comment """
+nary:predicate indicates, for a particular curried nary:Argument,
+the predicate that would be present if the curried relation were
+expanded to full reified form.
+""" .
+
+nary:object a rdf:Property ;
+    rdfs:label "object" ;
+    rdfs:domain nary:Argument ;
+    rdfs:comment """
+nary:object indicates, for a particular curried nary:Argument,
+the object that would be present if the curried relation were 
+expanded to full reified form.
+""" .
+
+nary:subjectPredicate a owl:ObjectProperty ;
+    rdfs:label "subject" ;
+    rdfs:domain nary:BinaryRelation ;
+    rdfs:range rdf:Property ;
+    rdfs:comment """
+nary:subjectPredicate indicates, for a particular nary:BinaryRelation,
+which predicate to use for the subject of that relation when
+constructing the reified equivalent.
+""" .
+
+nary:objectPredicate a owl:ObjectProperty ;
+    rdfs:label "object" ;
+    rdfs:domain nary:BinaryRelation ;
+    rdfs:range rdf:Property ;
+    rdfs:comment """
+nary:objectPredicate indicates, for a particular nary:BinaryRelation,
+which predicate to use for the object of that relation when
+constructing the reified equivalent.
+""" .
+
+nary:BinaryRelation a owl:Class ;
+    rdfs:label "binary relation" ;
+    owl:EquivalentClass rdf:Property ;
+    rdfs:subClassOf
+        nary:CurriedRelation, [
+            a owl:Restriction ;
+            owl:onProperty nary:subjectPredicate ;
+            owl:minCardinality 1 ;
+            owl:maxCardinality 1 ;
+        ], [
+            a owl:Restriction ;
+            owl:onProperty nary:objectPredicate ;
+            owl:minCardinality 1 ;
+            owl:maxCardinality 1 ;
+        ] ;
+    rdfs:comment """
+An nary:BinaryRelation is the only kind of "complete" nary:CurriedRelation
+in that it can be used to automatically instantiate the equivalent
+nary:Relation. It must have an nary:subjectPredicate and an
+nary:objectPredicate.
+""" .

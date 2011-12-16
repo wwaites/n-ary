@@ -1,0 +1,53 @@
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix nary: <http://gallows.inf.ed.ac.uk/schema/n-ary#> .
+
+## a curried predicate embedding the kilogram unit
+:massInKilograms a nary:BinaryRelation ;
+    nary:reifiedType :MassObservation ;
+    nary:subjectPredicate :system ;
+    nary:objectPredicate :value ;
+    nary:arg [
+        nary:predicate :unit ;
+        nary:object :kg
+    ] .
+
+## a curried predicate embedding the pounds unit
+:massInPounds a nary:BinaryRelation ;
+    nary:reifiedType :MassObservation ;
+    nary:subjectPredicate :system ;
+    nary:objectPredicate :value ;
+    nary:arg [
+        nary:predicate :unit ;
+        nary:object :lb
+    ] .
+
+## a unit conversion description
+[ 
+    a :Conversion ;
+    :fromUnit :kg ;
+    :toUnit :lb ;
+    :factor 2.2
+] .
+
+## a simplistic rule for converting units
+{
+    ?obs a :MassObservation ;
+        :system ?sys ;
+        :value ?val ;
+        :unit ?unit .
+    ?conv a :Conversion ;
+        :fromUnit ?unit ;
+        :toUnit ?toUnit ;
+        :factor ?factor .
+    (?val ?factor) math:prod ?toVal .
+} => {
+    [
+        a :MassObservation ;
+        :system ?sys ;
+        :value ?toVal ;
+        :unit ?toUnit
+    ] .
+} .
+
+:s1 :massInKilograms 1000.0 .
+

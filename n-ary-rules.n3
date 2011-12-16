@@ -1,0 +1,51 @@
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix nary: <http://gallows.inf.ed.ac.uk/schema/n-ary#> .
+
+#################################################################
+###
+### Rule #1 - convert from a binary relation to the reified form
+###
+### The rule for a "complete" binary relation. Construct
+### the reified version of the n-ary relation, adding
+### the relevant triples for the subject and object, and
+### any curried arguments.
+###
+#################################################################
+{
+    ?x ?rel ?y .
+    ?rel a nary:BinaryRelation ;
+        nary:reifiedType ?reified ;
+        nary:subjectPredicate ?subjP ;
+        nary:objectPredicate ?objP ;
+        nary:arg ?arg .
+    ?arg nary:predicate ?argP ;
+        nary:object ?argO .
+} => {
+    [
+        a ?reified ;
+        ?subjP ?x ;
+        ?objP ?y ;
+        ?argP ?argO
+    ] .
+} .
+
+#################################################################
+###
+### Rule #2 - convert from a reified form to a binary relation
+###
+#################################################################
+{
+    ?rel a nary:BinaryRelation ;
+        nary:reifiedType ?reified ;
+        nary:subjectPredicate ?subjP ;
+        nary:objectPredicate ?objP ;
+        nary:arg ?arg .
+    ?arg nary:predicate ?argP ;
+         nary:object ?argO .
+    ?nary a ?reified ;
+        ?subjP ?subj ;
+        ?objP ?obj ;
+        ?argP ?argO .
+} => {
+    ?subj ?rel ?obj .
+} .

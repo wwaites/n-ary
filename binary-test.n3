@@ -1,0 +1,15 @@
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix nary: <http://gallows.inf.ed.ac.uk/schema/n-ary#> .
+@prefix ex: <http://example.org/> .
+
+ex:president a nary:BinaryRelation ;
+    nary:reifiedType org:Membership ;
+    nary:subjectPredicate org:organisation ;
+    nary:objectPredicate org:member ;
+    nary:arg [
+        nary:predicate org:role ;
+        nary:object ex:president
+    ] .
+
+ex:org ex:president ex:alice .
+
